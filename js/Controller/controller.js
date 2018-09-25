@@ -1,15 +1,27 @@
 var words = []; 
 var tenWords = [];
+ 
 const NUMBER_OF_WORDS = 10;
 const NUMBER_OF_WORDS_TOTAL = 8080;
+
+var myWord = "";
+var wordArray = [];
+var wordHint = "";
+var myDesc = "";
+var wordContainer = "";
+var clicked = [];
+var gallowCount = 0;
 function button() {
     //repeat for all lettters
     for(let i =0; i < 26; i++) {
         let currentchar = String.fromCharCode('A'.charCodeAt() + i);
         let btn = document.createElement("BUTTON");
         let t = document.createTextNode(currentchar);
+        clicked[i] = false;
         btn.appendChild(t);
+        btn.id = currentchar;
         btn.className = "btn btn-primary alphabetbox";
+        btn.setAttribute("onClick", "clickLetter(this)");
         //grab alphabet frame
         let element = document.getElementById("alphabetFrame");
         //add letter
@@ -22,6 +34,7 @@ function onLoaded() {
     getWord();
     readTextFile();
     get10Words();
+    setCurrentWord();
 }
 
 function readTextFile()
@@ -46,20 +59,80 @@ function readTextFile()
 function get10Words() {
     for(let i =0; i < NUMBER_OF_WORDS; i++) {
         let newWord = words[getRandomInt(NUMBER_OF_WORDS_TOTAL)];
-        let newDef = definitionAPI(newWord, i);
-        let currentWord = new Word(newWord, "");
-        tenWords.push(currentWord);
         
+        let currentWord = new Word(newWord, "asd");
+        tenWords.push(currentWord);
+        definitionAPI(newWord, i);
     }
+}
+
+function clickLetter(input) {
+    console.log(input.innerHTML);
+    input.setAttribute("onClick", "");
+    input.className = "btn btn-info alphabetbox";
+    let letterFound = false;
+
+    for(let i =0; i < myWord.length; i++) {
+        
+        if(wordArray[i] == false) {
+            if(myWord[i].toUpperCase() == input.innerHTML) {
+                wordArray[i] = true;
+                regenWordHint();
+                letterFound = true;
+            }
+        }
+    }
+    if(letterFound == false && gallowCount < 6) {
+        let gallow = document.getElementById("gallow");
+        gallowCount = Number(gallowCount) + 1;
+        gallow.setAttribute("src", "images/gallow" + gallowCount + ".png");
+    }
+}
+function getWord() {
+
+}
+
+function setCurrentWord() {
+    let wordCount = getRandomInt(NUMBER_OF_WORDS -1);
+    myWord = tenWords[wordCount].word;
+    myDesc = tenWords[wordCount].description;
+    document.getElementById("defFrame").innerHTML = myDesc;
+    wordContainer = document.getElementById("wordContainer");
+    console.log(myWord);
+    generateWordBlank();
+    regenWordHint();
 
     for(let i =0; i < tenWords.length; i++) {
-
+        console.log(tenWords[i]);
     }
 }
 
-function getWord() {
-    let fucker = new Word("asdf","asd");
+function generateWordBlank() {
+    wordHint = "";
+    wordArray = [];
+    for(let i =0; i < myWord.length; i++) {
+        wordArray[i] = false;
+    }
 }
+
+function regenWordHint() {
+    wordHint = "";
+    for(let i =0; i < (wordArray.length - 1); i++) {
+        if(wordArray[i] == true) {
+            wordHint = wordHint + myWord[i] + " ";
+        }
+        else {
+            wordHint = wordHint + "_ ";
+        } 
+    }
+    let letter = document.createElement("P");
+    let t = document.createTextNode(wordHint);
+    letter.appendChild(t);
+    letter.className = "currentLetter";
+    wordContainer.innerHTML = "";
+    wordContainer.appendChild(letter);
+}
+
 
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
@@ -67,9 +140,27 @@ function getRandomInt(max) {
 
 function definitionAPI(word, i) {
     const url = 'https://api.datamuse.com/words?sp=' + word + '&md=d';
-    $.get(url, function(data, status){
-        console.log(data[0].defs[0]);
-        //tenWords[i].description = ;
+    $.ajax({
+        async: false,
+        type: 'GET',
+        url: url,
+        success: function(data) {
+             //callback
+             let f = tenWords[i];
+             f.description = data[0].defs[0];
+             //tenWords[i].setDesc = data[0].defs[0];
+             console.log(tenWords[i]);
+             //console.log(tenWords[i].description);
+        }
     });
+}
+
+function sleep(milliseconds) {
+    var start = new Date().getTime();
+    for (var i = 0; i < 1e7; i++) {
+      if ((new Date().getTime() - start) > milliseconds){
+        break;
+      }
+    }
 }
 

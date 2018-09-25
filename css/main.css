@@ -27,4 +27,40 @@
     margin-left:auto;
     margin-right:auto;
     width:100%;
+    height:100px;
+    text-align: center;
+}
+
+#defFrame {
+    text-align:center;
+}
+
+.titleFont {
+    text-align:center;
+    font-size:40px;
+    width:100%;
+    height:100px;
+    margin-top:10px;
+    font-weight:bold;
+}
+
+.currentLetter {
+    text-align:center;
+    font-size:50px;
+}
+
+#wordContainer {
+    margin-top:20px;
+    width:100%;
+    height:100px;
+}
+
+.imagecontainer {
+    margin-left:auto;
+    margin-right:auto;
+    text-align: center;
+}
+.gallow {
+    text-align: center;
+    max-height:50vh;
 }

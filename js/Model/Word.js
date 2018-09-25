@@ -4,8 +4,14 @@ class Word {
       this.description = desc;
     }
 
-    setDesc(desc) {
+
+
+    set setDesc(desc) {
         this.description = desc;
+    }
+
+    get getDesc() {
+        return this.description;
     }
 }
   
