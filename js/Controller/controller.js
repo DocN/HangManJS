@@ -1,9 +1,9 @@
+//loaded word bank and smaller word bank set of 10
 var words = []; 
 var tenWords = [];
- 
 const NUMBER_OF_WORDS = 10;
 const NUMBER_OF_WORDS_TOTAL = 8080;
-const userScore = "User Score: ";
+const USER_SCORE = "User Score: ";
 
 var myWord = "";
 var wordArray = [];
@@ -21,6 +21,16 @@ var winModal = document.getElementById('winModal');
 var loseModal = document.getElementById('loseModal');
 
 
+
+//functions being called after page is loaded
+function onLoaded() {
+    button();
+    readTextFile();
+    get10Words();
+    setCurrentWord();
+}
+
+//function for loading buttons
 function button() {
     //repeat for all lettters
     for(let i =0; i < 26; i++) {
@@ -39,16 +49,12 @@ function button() {
     }
 }
 
-function onLoaded() {
-    button();
-    readTextFile();
-    get10Words();
-    setCurrentWord();
-}
-
+//function for restarting game
 function restart() {
     location.reload();
 }
+
+//function for reading words from text
 function readTextFile()
 {
     let file = "http://localhost/hangyourself/data/words.txt";
@@ -68,16 +74,18 @@ function readTextFile()
     rawFile.send(null);
 }
 
+//function for getting 10 words to randomly choose from
 function get10Words() {
     for(let i =0; i < NUMBER_OF_WORDS; i++) {
         let newWord = words[getRandomInt(NUMBER_OF_WORDS_TOTAL)];
         
-        let currentWord = new Word(newWord, "asd");
+        let currentWord = new Word(newWord, "");
         tenWords.push(currentWord);
         definitionAPI(newWord, i);
     }
 }
 
+//function for when a letter is clicked 
 function clickLetter(input) {
     console.log(input.innerHTML);
     input.setAttribute("onClick", "");
@@ -91,10 +99,12 @@ function clickLetter(input) {
                 wordArray[i] = true;
                 regenWordHint();
                 letterFound = true;
-                updateScore();
+                gainScore();
             }
         }
     }
+
+    //when the gallow is complete and user still hasn't won
     if(gallowCount >= 5){
         loseModal.style.display = "block";
         let t = document.createTextNode("Your word was " + myWord);
@@ -103,10 +113,12 @@ function clickLetter(input) {
         document.getElementById("ans").appendChild(yourword);
         return;
     }
+    //display loss
     if(discovery == (wordArray.length -1)) {
         winModal.style.display = "block";
         return;
     }
+    //next gallow step
     if(letterFound == false && gallowCount < 6) {
         let gallow = document.getElementById("gallow");
         gallowCount = Number(gallowCount) + 1;
@@ -115,16 +127,24 @@ function clickLetter(input) {
     }
 }
 
+//score update when winning
+function gainScore() {
+    score = score + 1;
+    updateScore();
+}
+
+//score update when losing
 function loseScore() {
     score = score - 1;
     updateScore();
 }
 
+//changes the score value on screen
 function updateScore() {
-    document.getElementById("score").innerHTML = userScore + score;
+    document.getElementById("score").innerHTML = USER_SCORE + score;
 }
 
-
+//sets the selected word in the view wordContainer
 function setCurrentWord() {
     let wordCount = getRandomInt(NUMBER_OF_WORDS -1);
     myWord = tenWords[wordCount].word;
@@ -140,6 +160,7 @@ function setCurrentWord() {
     }
 }
 
+//generates a blank word (not revealed word yet)
 function generateWordBlank() {
     wordHint = "";
     wordArray = [];
@@ -148,6 +169,7 @@ function generateWordBlank() {
     }
 }
 
+//update word hint in word container
 function regenWordHint() {
     wordHint = "";
     for(let i =0; i < (wordArray.length - 1); i++) {
@@ -166,11 +188,12 @@ function regenWordHint() {
     wordContainer.appendChild(letter);
 }
 
-
+//random math memes
 function getRandomInt(max) {
     return Math.floor(Math.random() * Math.floor(max));
 }
 
+//grab definition from dictionary api
 function definitionAPI(word, i) {
     const url = 'https://api.datamuse.com/words?sp=' + word + '&md=d';
     $.ajax({
@@ -185,16 +208,6 @@ function definitionAPI(word, i) {
         }
     });
 }
-
-function sleep(milliseconds) {
-    var start = new Date().getTime();
-    for (var i = 0; i < 1e7; i++) {
-      if ((new Date().getTime() - start) > milliseconds){
-        break;
-      }
-    }
-}
-
 
 // When the user clicks the button, open the modal 
 btn.onclick = function() {
