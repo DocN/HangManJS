@@ -3,6 +3,7 @@ var tenWords = [];
  
 const NUMBER_OF_WORDS = 10;
 const NUMBER_OF_WORDS_TOTAL = 8080;
+const userScore = "User Score: ";
 
 var myWord = "";
 var wordArray = [];
@@ -11,6 +12,15 @@ var myDesc = "";
 var wordContainer = "";
 var clicked = [];
 var gallowCount = 0;
+var score = 0;
+var discovery = 0;
+
+// Get the modal
+var winModal = document.getElementById('winModal');
+// Get the modal
+var loseModal = document.getElementById('loseModal');
+
+
 function button() {
     //repeat for all lettters
     for(let i =0; i < 26; i++) {
@@ -31,12 +41,14 @@ function button() {
 
 function onLoaded() {
     button();
-    getWord();
     readTextFile();
     get10Words();
     setCurrentWord();
 }
 
+function restart() {
+    location.reload();
+}
 function readTextFile()
 {
     let file = "http://localhost/hangyourself/data/words.txt";
@@ -73,24 +85,45 @@ function clickLetter(input) {
     let letterFound = false;
 
     for(let i =0; i < myWord.length; i++) {
-        
         if(wordArray[i] == false) {
             if(myWord[i].toUpperCase() == input.innerHTML) {
+                discovery = Number(discovery) + 1;
                 wordArray[i] = true;
                 regenWordHint();
                 letterFound = true;
+                updateScore();
             }
         }
+    }
+    if(gallowCount >= 5){
+        loseModal.style.display = "block";
+        let t = document.createTextNode("Your word was " + myWord);
+        let yourword = document.createElement("P");
+        yourword.appendChild(t);
+        document.getElementById("ans").appendChild(yourword);
+        return;
+    }
+    if(discovery == (wordArray.length -1)) {
+        winModal.style.display = "block";
+        return;
     }
     if(letterFound == false && gallowCount < 6) {
         let gallow = document.getElementById("gallow");
         gallowCount = Number(gallowCount) + 1;
         gallow.setAttribute("src", "images/gallow" + gallowCount + ".png");
+        loseScore();
     }
 }
-function getWord() {
 
+function loseScore() {
+    score = score - 1;
+    updateScore();
 }
+
+function updateScore() {
+    document.getElementById("score").innerHTML = userScore + score;
+}
+
 
 function setCurrentWord() {
     let wordCount = getRandomInt(NUMBER_OF_WORDS -1);
@@ -148,9 +181,7 @@ function definitionAPI(word, i) {
              //callback
              let f = tenWords[i];
              f.description = data[0].defs[0];
-             //tenWords[i].setDesc = data[0].defs[0];
              console.log(tenWords[i]);
-             //console.log(tenWords[i].description);
         }
     });
 }
@@ -161,6 +192,24 @@ function sleep(milliseconds) {
       if ((new Date().getTime() - start) > milliseconds){
         break;
       }
+    }
+}
+
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+    modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
     }
 }
 
