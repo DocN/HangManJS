@@ -129,13 +129,13 @@ function clickLetter(input) {
 
 //score update when winning
 function gainScore() {
-    score = score + 1;
+    score = Number(score) + 1;
     updateScore();
 }
 
 //score update when losing
 function loseScore() {
-    score = score - 1;
+    score = Number(score) - 1;
     updateScore();
 }
 
