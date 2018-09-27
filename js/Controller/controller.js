@@ -154,10 +154,6 @@ function setCurrentWord() {
     console.log(myWord);
     generateWordBlank();
     regenWordHint();
-
-    for(let i =0; i < tenWords.length; i++) {
-        console.log(tenWords[i]);
-    }
 }
 
 //generates a blank word (not revealed word yet)
@@ -201,28 +197,12 @@ function definitionAPI(word, i) {
         type: 'GET',
         url: url,
         success: function(data) {
-             //callback
-             let f = tenWords[i];
-             f.description = data[0].defs[0];
-             console.log(tenWords[i]);
+            //callback
+            let f = tenWords[i];
+            if(data[0].defs[0]) {
+                f.description = data[0].defs[0];
+            }
         }
     });
-}
-
-// When the user clicks the button, open the modal 
-btn.onclick = function() {
-    modal.style.display = "block";
-}
-
-// When the user clicks on <span> (x), close the modal
-span.onclick = function() {
-    modal.style.display = "none";
-}
-
-// When the user clicks anywhere outside of the modal, close it
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
 }
 
